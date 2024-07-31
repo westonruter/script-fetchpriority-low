@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Force Low-Priority Interactivity API Script Modules
- * Plugin URI: ...
- * Description: Performance plugin from the WordPress Performance Team, which is a collection of standalone performance features.
+ * Plugin URI: https://core.trac.wordpress.org/ticket/61734
+ * Description: Improves Largest Contentful Paint by forcing the module scripts (from the Interactivity API) to be loaded with a low priority rather than the default high priority. This prevents network contention with loading the LCP element.
  * Requires at least: 6.5
  * Requires PHP: 7.2
  * Version: 0.1
@@ -10,7 +10,7 @@
  * Author URI: https://weston.ruter.net/
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * Update URI:
+ * Update URI: https://gist.github.com/westonruter/471111a891f43e0f48bc7e0ca478623d
  */
 
 if ( isset( $_GET['disable-script-module-low-priority'] ) ) {
