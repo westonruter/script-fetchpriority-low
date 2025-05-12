@@ -5,7 +5,7 @@
  * Description: Improves Largest Contentful Paint by forcing the module scripts (from the Interactivity API) to be loaded with a low priority rather than the default high priority. This prevents network contention with loading the LCP element.
  * Requires at least: 6.5
  * Requires PHP: 7.2
- * Version: 0.1
+ * Version: 0.1.1
  * Author: Weston Ruter
  * Author URI: https://weston.ruter.net/
  * License: GPLv2 or later
@@ -13,7 +13,7 @@
  * Update URI: https://gist.github.com/westonruter/471111a891f43e0f48bc7e0ca478623d
  */
 
-if ( isset( $_GET['disable-script-module-low-priority'] ) ) {
+if ( isset( $_GET['disable_script_module_low_priority'] ) ) {
 	return;
 }
 
