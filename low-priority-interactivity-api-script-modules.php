@@ -2,21 +2,25 @@
 /**
  * Plugin Name: Force Low-Priority Interactivity API Script Modules
  * Plugin URI: https://core.trac.wordpress.org/ticket/61734
- * Description: Improves Largest Contentful Paint by forcing the module scripts (from the Interactivity API) to be loaded with a low priority rather than the default high priority. This prevents network contention with loading the LCP element.
+ * Description: Improves Largest Contentful Paint by forcing the module scripts (from the Interactivity API) to be loaded with a low priority rather than the default high priority. This prevents network contention with loading the LCP element. The performance improvement is primarily for block themes.
  * Requires at least: 6.5
  * Requires PHP: 7.2
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: Weston Ruter
  * Author URI: https://weston.ruter.net/
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * Update URI: https://gist.github.com/westonruter/471111a891f43e0f48bc7e0ca478623d
+ * Gist Plugin URI: https://gist.github.com/westonruter/471111a891f43e0f48bc7e0ca478623d
  */
 
+// Short-circuit functionality to facilitate benchmarking performance impact.
 if ( isset( $_GET['disable_script_module_low_priority'] ) ) {
 	return;
 }
 
+// Add fetchpriority=low to the SCRIPT tags for Interactivity API view modules from the block library.
+// TODO: This should also add fetchpriority=low to module scripts for non-core blocks.
 add_filter(
 	'wp_script_attributes',
 	static function ( $attributes ) {
@@ -32,7 +36,7 @@ add_filter(
 	}
 );
 
-
+// Add fetchpriority=low to the script modulepreload LINK tags.
 add_action(
 	'init',
 	static function () {
