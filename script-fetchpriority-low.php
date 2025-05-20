@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Script Fetch Priority Low
  * Plugin URI: https://github.com/westonruter/script-fetchpriority-low
- * Description: Improves performance for the LCP metric by setting <code>fetchpriority=low</code> for on script modules (and modulepreload links) for the Interactivity API as well as on the <code>comment-reply</code> script.
+ * Description: Improves performance for the LCP metric by setting <code>fetchpriority=low</code> for on script modules (and modulepreload links) for the Interactivity API as well as on the <code>comment-reply</code> script. This implements <a href="https://core.trac.wordpress.org/ticket/61734">#61734</a>.
  * Requires at least: 6.5
  * Requires PHP: 7.2
  * Version: 0.1.0
@@ -20,11 +20,22 @@
 namespace ScriptFetchpriorityLow;
 
 use WP_HTML_Tag_Processor;
+use WP_Scripts;
 
 // Short-circuit functionality to facilitate benchmarking performance impact.
 if ( isset( $_GET['disable_script_fetchpriority_low'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	return;
 }
+
+/**
+ * Add fetchpriority=low to the comment-reply script.
+ *
+ * @param WP_Scripts $scripts Scripts.
+ */
+function add_fetchpriority_low_to_comment_reply_script( WP_Scripts $scripts ): void {
+	$scripts->add_data( 'comment-reply', 'fetchpriority', 'low' );
+}
+add_action( 'wp_default_scripts', __NAMESPACE__ . '\add_fetchpriority_low_to_comment_reply_script' );
 
 /**
  * Gets the fetchpriority for the value for the provided SCRIPT attributes.
@@ -72,7 +83,7 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 		}
 	}
 
-	return 'auto';
+	return null;
 }
 
 /**
