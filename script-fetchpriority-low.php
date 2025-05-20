@@ -57,7 +57,7 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 		str_ends_with( $attributes['id'], '-js-module' )
 		&&
 		(
-			// The Interactivity API modules (@wordpress/interactivity, @wordpress/interactivity/debug, @wordpress/interactivity-router).
+			// The Interactivity API modules (@wordpress/interactivity, @wordpress/interactivity-router).
 			str_starts_with( $attributes['id'], '@wordpress/interactivity' )
 			||
 			// Core blocks, which have handles in the format of `@wordpress/block-library/{blockName}/view-js-module` according to the logic in wp_default_script_modules().
@@ -141,7 +141,10 @@ function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void 
 			}
 			$processor = new WP_HTML_Tag_Processor( $buffer );
 			while ( $processor->next_tag( array( 'tag_name' => 'LINK' ) ) ) {
-				$processor->set_attribute( 'fetchpriority', 'low' );
+				$id = (string) $processor->get_attribute( 'id' );
+				if ( str_starts_with( $id, '@wordpress/interactivity' ) && str_ends_with( $id, '-js-modulepreload' ) ) {
+					$processor->set_attribute( 'fetchpriority', 'low' );
+				}
 			}
 			echo $processor->get_updated_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		},
