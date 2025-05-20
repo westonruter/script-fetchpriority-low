@@ -38,7 +38,7 @@ function add_fetchpriority_low_to_comment_reply_script( WP_Scripts $scripts ): v
 add_action( 'wp_default_scripts', __NAMESPACE__ . '\add_fetchpriority_low_to_comment_reply_script' );
 
 /**
- * Gets the fetchpriority for the value for the provided SCRIPT attributes.
+ * Gets the fetchpriority for the value for the provided SCRIPT attributes for scripts and script modules.
  *
  * @param array{ id?: string, type?: string } $attributes Script attributes.
  * @return 'auto'|'low'|'high'|null The fetchpriority attribute value, or null if the script should not have a fetchpriority attribute..
@@ -48,6 +48,7 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 		return null;
 	}
 
+	// Script modules.
 	if (
 		isset( $attributes['type'] )
 		&&
@@ -56,14 +57,20 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 		str_ends_with( $attributes['id'], '-js-module' )
 		&&
 		(
+			// The Interactivity API modules (@wordpress/interactivity, @wordpress/interactivity/debug, @wordpress/interactivity-router).
+			str_starts_with( $attributes['id'], '@wordpress/interactivity' )
+			||
+			// Core blocks, which have handles in the format of `@wordpress/block-library/{blockName}/view-js-module` according to the logic in wp_default_script_modules().
 			str_starts_with( $attributes['id'], '@wordpress/block-library/' )
 			||
-			str_starts_with( $attributes['id'], '@wordpress/interactivity' )
+			// For third-party blocks which support the Interactivity API and have a viewScriptModule (e.g. the embed block in the Web Stories plugin). The ID is generated via generate_block_asset_handle().
+			str_ends_with( $attributes['id'], '-view-script-module-js-module' )
 		)
 	) {
 		return 'low';
 	}
 
+	// Classic scripts.
 	if (
 		( ! isset( $attributes['type'] ) || 'text/javascript' === $attributes['type'] )
 		&&
@@ -89,8 +96,6 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 /**
  * Adds fetchpriority to SCRIPT tags.
  *
- * @todo This should also add fetchpriority=low to module scripts for non-core blocks.
- *
  * @param array<string, string>|mixed $attributes Script attributes.
  * @return array{ id?: string, type?: string, fetchpriority?: 'low'|'high' } Modified attributes.
  */
@@ -115,6 +120,8 @@ add_filter( 'wp_script_attributes', __NAMESPACE__ . '\filter_script_tag_attribut
 
 /**
  * Adds fetchpriority=low to the modulepreload LINK tags.
+ *
+ * @see \WP_Script_Modules::print_a11y_script_module_html()
  */
 function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void {
 	$position = wp_is_block_theme() ? 'wp_head' : 'wp_footer';
@@ -141,5 +148,4 @@ function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void 
 		$priority
 	);
 }
-
 add_action( 'init', __NAMESPACE__ . '\add_fetchpriority_low_to_interactivity_api_modulepreload_links' );
