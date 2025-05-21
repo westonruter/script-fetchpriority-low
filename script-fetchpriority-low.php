@@ -28,6 +28,34 @@ if ( isset( $_GET['disable_script_fetchpriority_low'] ) ) { // phpcs:ignore Word
 }
 
 /**
+ * Checks whether the provided script module ID is for the Interactivity API.
+ *
+ * @param string $id Script module ID.
+ * @return bool Whether the script module ID is for the Interactivity API.
+ */
+function is_interactivity_api_script_module( string $id ): bool {
+	return (
+		// These are usually not directly enqueued, so these will be emitted as modulepreload links which should get fetchpriority=low.
+		in_array(
+			$id,
+			// TODO: It would be nice if wp_script_modules()->registered weren't private so that dependencies could be inspected.
+			array(
+				'@wordpress/interactivity',        // Dependency of all blocks using the Interactivity API.
+				'@wordpress/interactivity-router', // Dependencies: @wordpress/interactivity and @wordpress/a11y.
+				'@wordpress/a11y',                 // This is actually a dynamic import (currently), so it shouldn't show up as a modulepreload link.
+			),
+			true
+		)
+		||
+		// Core blocks, which have handles in the format of `@wordpress/block-library/{blockName}/view-js-module` according to the logic in wp_default_script_modules().
+		str_starts_with( $id, '@wordpress/block-library/' )
+		||
+		// For third-party blocks which support the Interactivity API and have a viewScriptModule (e.g. the embed block in the Web Stories plugin). The ID is generated via generate_block_asset_handle().
+		str_ends_with( $id, '-view-script-module' )
+	);
+}
+
+/**
  * Add fetchpriority=low to the comment-reply script.
  *
  * @param WP_Scripts $scripts Scripts.
@@ -48,37 +76,26 @@ function get_fetchpriority_for_script_tag( array $attributes ): ?string {
 		return null;
 	}
 
-	// Script modules.
+	// Script modules (for the Interactivity API).
 	if (
 		isset( $attributes['type'] )
 		&&
 		'module' === $attributes['type']
 		&&
-		str_ends_with( $attributes['id'], '-js-module' )
+		1 === preg_match( '/^(?P<id>.+?)-js-module$/', $attributes['id'], $matches )
 		&&
-		(
-			// The Interactivity API modules (@wordpress/interactivity, @wordpress/interactivity-router).
-			str_starts_with( $attributes['id'], '@wordpress/interactivity' )
-			||
-			// Core blocks, which have handles in the format of `@wordpress/block-library/{blockName}/view-js-module` according to the logic in wp_default_script_modules().
-			str_starts_with( $attributes['id'], '@wordpress/block-library/' )
-			||
-			// For third-party blocks which support the Interactivity API and have a viewScriptModule (e.g. the embed block in the Web Stories plugin). The ID is generated via generate_block_asset_handle().
-			str_ends_with( $attributes['id'], '-view-script-module-js-module' )
-		)
+		is_interactivity_api_script_module( $matches['id'] )
 	) {
 		return 'low';
 	}
 
-	// Classic scripts.
+	// Classic scripts (which have the fetchpriority data added).
 	if (
 		( ! isset( $attributes['type'] ) || 'text/javascript' === $attributes['type'] )
 		&&
-		str_ends_with( $attributes['id'], '-js' )
+		1 === preg_match( '/^(?P<handle>.+?)-js$/', $attributes['id'], $matches )
 	) {
-		$handle = substr( $attributes['id'], 0, -3 );
-
-		$dependency = wp_scripts()->query( $handle );
+		$dependency = wp_scripts()->query( $matches['handle'] );
 		if (
 			$dependency
 			&&
@@ -141,8 +158,13 @@ function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void 
 			}
 			$processor = new WP_HTML_Tag_Processor( $buffer );
 			while ( $processor->next_tag( array( 'tag_name' => 'LINK' ) ) ) {
-				$id = (string) $processor->get_attribute( 'id' );
-				if ( str_starts_with( $id, '@wordpress/interactivity' ) && str_ends_with( $id, '-js-modulepreload' ) ) {
+				if (
+					is_string( $processor->get_attribute( 'id' ) )
+					&&
+					1 === preg_match( '/^(?P<id>.+?)-js-modulepreload$/', $processor->get_attribute( 'id' ), $matches )
+					&&
+					is_interactivity_api_script_module( $matches['id'] )
+				) {
 					$processor->set_attribute( 'fetchpriority', 'low' );
 				}
 			}
