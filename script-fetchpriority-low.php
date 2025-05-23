@@ -141,8 +141,12 @@ add_filter( 'wp_script_attributes', __NAMESPACE__ . '\filter_script_tag_attribut
  * @see \WP_Script_Modules::print_a11y_script_module_html()
  */
 function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void {
-	$position = wp_is_block_theme() ? 'wp_head' : 'wp_footer';
-	$priority = has_action( $position, array( wp_script_modules(), 'print_script_module_preloads' ) );
+	foreach ( array( 'wp_head', 'wp_footer' ) as $position ) {
+		$priority = has_action( $position, array( wp_script_modules(), 'print_script_module_preloads' ) );
+		if ( is_int( $priority ) ) {
+			break;
+		}
+	}
 	if ( ! is_int( $priority ) ) {
 		return;
 	}
