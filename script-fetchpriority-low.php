@@ -177,4 +177,10 @@ function add_fetchpriority_low_to_interactivity_api_modulepreload_links(): void 
 		$priority
 	);
 }
-add_action( 'init', __NAMESPACE__ . '\add_fetchpriority_low_to_interactivity_api_modulepreload_links' );
+
+// Note that WP_Script_Modules::add_hooks() is called at after_setup_theme priority 10. Priority 1000 is used so that other plugins have the opportunity to override where script modules are printed.
+add_action(
+	'after_setup_theme',
+	__NAMESPACE__ . '\add_fetchpriority_low_to_interactivity_api_modulepreload_links',
+	1000
+);
