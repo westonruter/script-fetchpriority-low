@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Script Fetch Priority Low
  * Plugin URI: https://github.com/westonruter/script-fetchpriority-low
- * Description: Improves performance for the LCP metric by setting <code>fetchpriority=low</code> for on script modules (and modulepreload links) for the Interactivity API as well as on the <code>comment-reply</code> script. This implements <a href="https://core.trac.wordpress.org/ticket/61734">#61734</a>.
+ * Description: Improves performance for the LCP metric by setting <code>fetchpriority=low</code> for on script modules (and <code>modulepreload</code> links) for the Interactivity API as well as on the <code>comment-reply</code> script. This implements <a href="https://core.trac.wordpress.org/ticket/61734">#61734</a>.
  * Requires at least: 6.5
  * Requires PHP: 7.2
  * Version: 0.1.0
