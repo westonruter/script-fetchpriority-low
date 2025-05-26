@@ -10,7 +10,7 @@ Tags:         performance
 
 This plugin improves performance for the LCP metric by setting `fetchpriority=low` on script modules (and `modulepreload` links) for the Interactivity API as well as on the `comment-reply` script.
 
-This is a workaround to implement [#61734](https://core.trac.wordpress.org/ticket/61734).
+This is a prototype to implement [#61734](https://core.trac.wordpress.org/ticket/61734) in WordPress core.
 
 ## Installation ##
 
