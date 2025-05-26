@@ -12,6 +12,8 @@ This plugin improves performance for the LCP metric by setting `fetchpriority=lo
 
 This is a prototype to implement [#61734](https://core.trac.wordpress.org/ticket/61734) in WordPress core.
 
+Related plugin: [Script Modules in Footer](https://github.com/westonruter/script-modules-in-footer)
+
 ## Installation ##
 
 1. Download the plugin [ZIP from GitHub](https://github.com/westonruter/script-fetchpriority-low/archive/refs/heads/main.zip) or if you have a local clone of the repo, run `npm run plugin-zip`.
