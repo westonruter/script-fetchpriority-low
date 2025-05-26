@@ -12,6 +12,57 @@ This plugin improves performance for the LCP metric by setting `fetchpriority=lo
 
 This is a prototype to implement [#61734](https://core.trac.wordpress.org/ticket/61734) in WordPress core.
 
+Here's an example of the changes you can expect to the page markup:
+
+```diff
+--- before.prettier.html
++++ after.prettier.html
+@@ -2150,28 +2150,34 @@
+       type="module"
+       src="http://localhost:10008/wp-includes/js/dist/script-modules/block-library/file/view.min.js?ver=fdc2f6842e015af83140"
+       id="@wordpress/block-library/file/view-js-module"
++      fetchpriority="low"
+     ></script>
+     <script
+       type="module"
+       src="http://localhost:10008/wp-includes/js/dist/script-modules/block-library/image/view.min.js?ver=e38a2f910342023b9d19"
+       id="@wordpress/block-library/image/view-js-module"
++      fetchpriority="low"
+     ></script>
+     <script
+       type="module"
+       src="http://localhost:10008/wp-includes/js/dist/script-modules/block-library/navigation/view.min.js?ver=61572d447d60c0aa5240"
+       id="@wordpress/block-library/navigation/view-js-module"
++      fetchpriority="low"
+     ></script>
+     <script
+       type="module"
+       src="http://localhost:10008/wp-includes/js/dist/script-modules/block-library/query/view.min.js?ver=f55e93a1ad4806e91785"
+       id="@wordpress/block-library/query/view-js-module"
++      fetchpriority="low"
+     ></script>
+     <script
+       type="module"
+       src="http://localhost:10008/wp-includes/js/dist/script-modules/block-library/search/view.min.js?ver=208bf143e4074549fa89"
+       id="@wordpress/block-library/search/view-js-module"
++      fetchpriority="low"
+     ></script>
+     <link
++      fetchpriority="low"
+       rel="modulepreload"
+       href="http://localhost:10008/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=55aebb6e0a16726baffb"
+       id="@wordpress/interactivity-js-modulepreload"
+@@ -3171,6 +3177,7 @@
+       id="comment-reply-js"
+       async
+       data-wp-strategy="async"
++      fetchpriority="low"
+     ></script>
+     <script id="wp-block-template-skip-link-js-after">
+       (function () {
+```
+
+
 Related plugin: [Script Modules in Footer](https://github.com/westonruter/script-modules-in-footer)
 
 ## Installation ##
