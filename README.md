@@ -62,6 +62,7 @@ Here's an example of the changes you can expect to the page markup:
        (function () {
 ```
 
+See full writeup: [Improve LCP by Deprioritizing Script Modules from the Interactivity API](https://weston.ruter.net/2025/05/26/improve-lcp-by-deprioritizing-interactivity-api-script-modules/).
 
 Related plugin: [Script Modules in Footer](https://github.com/westonruter/script-modules-in-footer)
 
